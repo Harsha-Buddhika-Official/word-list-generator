@@ -13,8 +13,14 @@ public class WordlistGenerator {
         String firstName = scanner.nextLine().trim();
         System.out.print("Last Name: ");
         String lastName = scanner.nextLine().trim();
-        System.out.print("Birthday (e.g., 19900101): ");
+        System.out.print("Birthday (YYYYMMDD or blank): ");
         String birthday = scanner.nextLine().trim();
+        String bYear = "", bMonth = "", bDay = "";
+        if (birthday.length() == 8) {
+            bYear = birthday.substring(0, 4);
+            bMonth = birthday.substring(4, 6);
+            bDay = birthday.substring(6, 8);
+        }
         System.out.print("Home Address: ");
         String homeAddress = scanner.nextLine().trim();
         List<String> inputs = new ArrayList<>();
@@ -33,10 +39,10 @@ public class WordlistGenerator {
         }
         inputs.addAll(otherInfos);
 
-        List<String> wordlist = generateCombinations(inputs);
-        wordlist.addAll(applyPatterns(wordlist));
-        wordlist.addAll(applySubstitutions(wordlist));
-        wordlist.addAll(getCommonPasswords());
+    List<String> wordlist = generateCombinations(inputs);
+    wordlist.addAll(applyPatterns(wordlist, bYear, bMonth, bDay));
+    wordlist.addAll(applySubstitutions(wordlist));
+    wordlist.addAll(getCommonPasswords());
 
         // Remove duplicates
         List<String> finalWordlist = new ArrayList<>();
@@ -80,24 +86,24 @@ public class WordlistGenerator {
         }
     }
 
-    // Add common patterns (e.g., append/prepend years, numbers, special chars, infix)
-    private static List<String> applyPatterns(List<String> base) {
-        String[] years = {"2025", "2024", "2023", "2022", "2021", "2020", "2010", "2000", "1990", "1980"};
+    // Add common patterns (append/prepend birthday parts, numbers, special chars, infix)
+    private static List<String> applyPatterns(List<String> base, String bYear, String bMonth, String bDay) {
         String[] nums = {"1", "12", "123", "1234", "12345", "007", "111", "999", "000", "888", "555", "777", "987654", "654321"};
         String[] specials = {"!", "@", "#", "$", "%", "*", "?", "!!", "@@", "##", "$!", "!?", "!!@", "@!", "#?", "**", "$$", "!!1", "!@#"};
         List<String> result = new ArrayList<>();
+        String[] bParts = {bYear, bMonth, bDay};
         for (String word : base) {
             // Suffix
-            for (String year : years) result.add(word + year);
+            for (String part : bParts) if (!part.isEmpty()) result.add(word + part);
             for (String num : nums) result.add(word + num);
             for (String sp : specials) result.add(word + sp);
-            for (String year : years) for (String sp : specials) result.add(word + year + sp);
+            for (String part : bParts) for (String sp : specials) if (!part.isEmpty()) result.add(word + part + sp);
             for (String num : nums) for (String sp : specials) result.add(word + num + sp);
             // Prefix
-            for (String year : years) result.add(year + word);
+            for (String part : bParts) if (!part.isEmpty()) result.add(part + word);
             for (String num : nums) result.add(num + word);
             for (String sp : specials) result.add(sp + word);
-            for (String year : years) for (String sp : specials) result.add(sp + year + word);
+            for (String part : bParts) for (String sp : specials) if (!part.isEmpty()) result.add(sp + part + word);
             for (String num : nums) for (String sp : specials) result.add(sp + num + word);
             // Infix (split word in half)
             int mid = word.length() / 2;
@@ -105,6 +111,7 @@ public class WordlistGenerator {
             String second = word.substring(mid);
             for (String sp : specials) result.add(first + sp + second);
             for (String num : nums) result.add(first + num + second);
+            for (String part : bParts) if (!part.isEmpty()) result.add(first + part + second);
         }
         return result;
     }
