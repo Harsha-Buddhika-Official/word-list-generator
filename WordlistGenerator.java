@@ -6,15 +6,15 @@ import java.util.Scanner;
 
 public class WordlistGenerator {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         System.out.println("Enter details for wordlist generation (leave blank to skip):");
 
         System.out.print("First Name: ");
-        String firstName = scanner.nextLine().trim();
+        String firstName = sc.nextLine().trim();
         System.out.print("Last Name: ");
-        String lastName = scanner.nextLine().trim();
+        String lastName = sc.nextLine().trim();
         System.out.print("Birthday (YYYYMMDD or blank): ");
-        String birthday = scanner.nextLine().trim();
+        String birthday = sc.nextLine().trim();
         String bYear = "", bMonth = "", bDay = "";
         if (birthday.length() == 8) {
             bYear = birthday.substring(0, 4);
@@ -22,7 +22,7 @@ public class WordlistGenerator {
             bDay = birthday.substring(6, 8);
         }
         System.out.print("Home Address: ");
-        String homeAddress = scanner.nextLine().trim();
+        String homeAddress = sc.nextLine().trim();
         List<String> inputs = new ArrayList<>();
         if (!firstName.isEmpty()) inputs.add(firstName);
         if (!lastName.isEmpty()) inputs.add(lastName);
@@ -33,7 +33,7 @@ public class WordlistGenerator {
         List<String> otherInfos = new ArrayList<>();
         System.out.println("Enter Other Info about the target (one per line, blank line to finish):");
         while (true) {
-            String info = scanner.nextLine().trim();
+            String info = sc.nextLine().trim();
             if (info.isEmpty()) break;
             otherInfos.add(info);
         }
@@ -59,6 +59,7 @@ public class WordlistGenerator {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
+        sc.close();
     }
 
     // Generate all combinations (single, pairs, triples, etc.)
